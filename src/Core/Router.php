@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Controllers\AuthController;
+use App\Controllers\BreakController;
 use App\Controllers\DashboardController;
 use App\Controllers\RequestController;
 use App\Controllers\ScheduleController;
@@ -30,6 +31,10 @@ final class Router
             'POST' => [
                 '/login' => [AuthController::class, 'login'],
                 '/logout' => [AuthController::class, 'logout'],
+                '/requests/submit' => [RequestController::class, 'submit'],
+                '/requests/update' => [RequestController::class, 'updateStatus'],
+                '/schedule/generate' => [ScheduleController::class, 'generate'],
+                '/breaks/log' => [BreakController::class, 'log'],
             ],
         ];
     }
