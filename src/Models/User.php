@@ -4,59 +4,65 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Core\Database;
+
 final class User
 {
-    private static array $users = [
-        [
-            'id' => 1,
-            'name' => 'Diana Director',
-            'email' => 'director@shift.test',
-            'password' => 'password',
-            'role' => 'director',
-            'section' => 'all',
-        ],
-        [
-            'id' => 2,
-            'name' => 'Taylor Leader',
-            'email' => 'leader@app.test',
-            'password' => 'password',
-            'role' => 'team_leader',
-            'section' => 'App After-Sales',
-        ],
-        [
-            'id' => 3,
-            'name' => 'Sam Supervisor',
-            'email' => 'supervisor@agent.test',
-            'password' => 'password',
-            'role' => 'supervisor',
-            'section' => 'Agent After-Sales',
-        ],
-        [
-            'id' => 4,
-            'name' => 'Sydney Senior',
-            'email' => 'senior@app.test',
-            'password' => 'password',
-            'role' => 'senior',
-            'section' => 'App After-Sales',
-        ],
-        [
-            'id' => 5,
-            'name' => 'Evan Employee',
-            'email' => 'employee@agent.test',
-            'password' => 'password',
-            'role' => 'employee',
-            'section' => 'Agent After-Sales',
-        ],
-    ];
-
     public static function attempt(string $email, string $password): ?array
     {
-        foreach (self::$users as $user) {
-            if ($user['email'] === $email && $user['password'] === $password) {
-                return $user;
-            }
+        $pdo = Database::connection();
+
+        $stmt = $pdo->prepare(
+            'SELECT users.id,
+                    users.name,
+                    users.email,
+                    users.password_hash,
+                    users.role,
+                    sections.name AS section
+             FROM users
+             LEFT JOIN sections ON users.section_id = sections.id
+             WHERE users.email = :email AND users.active = 1
+             LIMIT 1'
+        );
+        $stmt->execute(['email' => $email]);
+        $user = $stmt->fetch();
+
+        if (!$user || !password_verify($password, $user['password_hash'])) {
+            return null;
         }
 
-        return null;
+        return [
+            'id' => (int) $user['id'],
+            'name' => $user['name'],
+            'email' => $user['email'],
+            'role' => $user['role'],
+            'section' => $user['section'] ?? 'All Sections',
+        ];
+    }
+
+    public static function bySection(?string $sectionName): array
+    {
+        $pdo = Database::connection();
+
+        if ($sectionName === null || strtolower($sectionName) === 'all sections') {
+            $stmt = $pdo->query(
+                'SELECT users.id, users.name, users.role, users.email, users.section_id, sections.name AS section
+                 FROM users
+                 LEFT JOIN sections ON users.section_id = sections.id
+                 WHERE users.active = 1
+                 ORDER BY users.name'
+            );
+            return $stmt->fetchAll();
+        }
+
+        $stmt = $pdo->prepare(
+            'SELECT users.id, users.name, users.role, users.email, users.section_id, sections.name AS section
+             FROM users
+             INNER JOIN sections ON users.section_id = sections.id
+             WHERE sections.name = :section AND users.active = 1
+             ORDER BY users.name'
+        );
+        $stmt->execute(['section' => $sectionName]);
+        return $stmt->fetchAll();
     }
 }
