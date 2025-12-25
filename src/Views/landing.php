@@ -6,6 +6,7 @@
         <p>Shift Scheduler unifies requests, approvals, scheduling, and compliance for multi-section teams. Launch faster with guided procedures, live analytics, and role-based experiences for every leader.</p>
         <div class="hero-actions">
             <a class="button btn-primary" href="/login">Access the platform</a>
+            <a class="button secondary btn-secondary" href="/register">Create an account</a>
             <a class="button ghost" href="#activation">Activation checklist</a>
         </div>
         <div class="hero-metrics glass-card">
@@ -58,7 +59,7 @@
             <h2>Launch the full workflow in four guided steps.</h2>
             <p class="muted">Follow the proven procedure to activate data, workflows, and automation with confidence.</p>
         </div>
-        <a class="button secondary btn-secondary" href="/login">Start configuration</a>
+        <a class="button secondary btn-secondary" href="/register">Start configuration</a>
     </div>
     <div class="grid">
         <article class="card glass-card">
@@ -121,6 +122,6 @@
         <h2>Ready to modernize shift operations?</h2>
         <p>Deliver a seamless experience from onboarding to compliance—powered by Shift Scheduler.</p>
     </div>
-    <a class="button btn-primary" href="/login">Launch the workspace</a>
+    <a class="button btn-primary" href="/register">Launch the workspace</a>
 </section>
 <?php require __DIR__ . '/partials/footer.php'; ?>
