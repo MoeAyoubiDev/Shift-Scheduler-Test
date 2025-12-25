@@ -1,0 +1,11 @@
+{
+  "name": "shift-scheduler/app",
+  "description": "Shift Scheduler MVC skeleton",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    }
+  },
+  "require": {}
+}
