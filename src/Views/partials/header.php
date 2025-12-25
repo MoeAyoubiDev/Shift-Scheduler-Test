@@ -28,6 +28,7 @@ $user = $user ?? null;
                     <a class="nav-card" href="/dashboard">Dashboard</a>
                 <?php else: ?>
                     <a class="nav-card" href="/login">Login</a>
+                    <a class="nav-card" href="/register">Sign up</a>
                 <?php endif; ?>
             </div>
         </div>

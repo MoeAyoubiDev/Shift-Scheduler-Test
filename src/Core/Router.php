@@ -24,12 +24,14 @@ final class Router
             'GET' => [
                 '/' => [DashboardController::class, 'home'],
                 '/login' => [AuthController::class, 'showLogin'],
+                '/register' => [AuthController::class, 'showRegister'],
                 '/dashboard' => [DashboardController::class, 'dashboard'],
                 '/requests' => [RequestController::class, 'index'],
                 '/schedule' => [ScheduleController::class, 'index'],
             ],
             'POST' => [
                 '/login' => [AuthController::class, 'login'],
+                '/register' => [AuthController::class, 'register'],
                 '/logout' => [AuthController::class, 'logout'],
                 '/requests/submit' => [RequestController::class, 'submit'],
                 '/requests/update' => [RequestController::class, 'updateStatus'],

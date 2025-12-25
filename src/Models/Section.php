@@ -14,4 +14,12 @@ final class Section
         $stmt = $pdo->query('SELECT id, name FROM sections ORDER BY name');
         return $stmt->fetchAll();
     }
+
+    public static function exists(int $sectionId): bool
+    {
+        $pdo = Database::connection();
+        $stmt = $pdo->prepare('SELECT COUNT(*) FROM sections WHERE id = :id');
+        $stmt->execute(['id' => $sectionId]);
+        return (int) $stmt->fetchColumn() > 0;
+    }
 }
