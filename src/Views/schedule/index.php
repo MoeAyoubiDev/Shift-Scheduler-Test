@@ -1,5 +1,5 @@
 <?php require __DIR__ . '/../partials/header.php'; ?>
-<section class="card">
+<section class="card glass-card">
     <h2>Weekly Schedule</h2>
     <p class="muted">Generate new drafts based on approved requests and staffing patterns.</p>
 
@@ -21,7 +21,7 @@
                     <?php endforeach; ?>
                 </select>
             </label>
-            <button type="submit" class="button secondary">Filter schedule</button>
+            <button type="submit" class="button secondary btn-secondary">Filter schedule</button>
         </form>
     <?php endif; ?>
 
@@ -43,40 +43,42 @@
                     </select>
                 </label>
             <?php endif; ?>
-            <button type="submit" class="button">Generate schedule</button>
+            <button type="submit" class="button btn-primary">Generate schedule</button>
         </form>
     <?php endif; ?>
 
     <?php if ($schedule): ?>
-        <table>
-            <thead>
-                <tr>
-                    <th>Employee</th>
-                    <th>Role</th>
-                    <th>Pattern</th>
-                    <th>Mon</th>
-                    <th>Tue</th>
-                    <th>Wed</th>
-                    <th>Thu</th>
-                    <th>Fri</th>
-                    <th>Sat</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($schedule as $row): ?>
+        <div class="table-wrap">
+            <table class="table-glass">
+                <thead>
                     <tr>
-                        <td><?= htmlspecialchars($row['employee']) ?></td>
-                        <td><?= htmlspecialchars($row['role']) ?></td>
-                        <td><?= htmlspecialchars($row['pattern']) ?></td>
-                        <?php foreach ($row['week'] as $shift): ?>
-                            <td><?= htmlspecialchars($shift) ?></td>
-                        <?php endforeach; ?>
+                        <th>Employee</th>
+                        <th>Role</th>
+                        <th>Pattern</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php foreach ($schedule as $row): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($row['employee']) ?></td>
+                            <td><?= htmlspecialchars($row['role']) ?></td>
+                            <td><?= htmlspecialchars($row['pattern']) ?></td>
+                            <?php foreach ($row['week'] as $shift): ?>
+                                <td><?= htmlspecialchars($shift) ?></td>
+                            <?php endforeach; ?>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     <?php else: ?>
-        <p class="muted">No schedule generated yet. Use the form above to build the next draft.</p>
+        <p class="muted empty-state">No schedule generated yet. Use the form above to build the next draft.</p>
     <?php endif; ?>
 </section>
 <?php require __DIR__ . '/../partials/footer.php'; ?>
