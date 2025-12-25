@@ -1,0 +1,10 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+class Section extends BaseModel
+{
+    protected string section = 'sections';
+}
