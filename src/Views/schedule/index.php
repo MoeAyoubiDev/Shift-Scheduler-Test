@@ -25,7 +25,7 @@
         </form>
     <?php endif; ?>
 
-    <?php if (in_array($user['role'], ['director', 'team_leader', 'supervisor'], true)): ?>
+    <?php if (in_array($user['role'], ['director', 'team_leader'], true)): ?>
         <form method="post" action="/schedule/generate" class="form schedule-form">
             <label>
                 Week start
@@ -61,6 +61,7 @@
                         <th>Thu</th>
                         <th>Fri</th>
                         <th>Sat</th>
+                        <th>Sun</th>
                     </tr>
                 </thead>
                 <tbody>

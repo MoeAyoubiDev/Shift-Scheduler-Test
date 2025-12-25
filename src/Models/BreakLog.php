@@ -8,14 +8,21 @@ use App\Core\Database;
 
 final class BreakLog
 {
-    public static function record(int $userId, string $shiftDate, ?string $breakStart, ?string $breakEnd, int $delayMinutes): void
+    public static function record(
+        int $userId,
+        string $shiftDate,
+        ?string $breakStart,
+        ?string $breakEnd,
+        int $delayMinutes,
+        string $breakType
+    ): void
     {
         $pdo = Database::connection();
-        $status = self::resolveStatus($delayMinutes);
+        $status = self::resolveStatus($breakStart, $breakEnd, $delayMinutes);
 
         $stmt = $pdo->prepare(
-            'INSERT INTO breaks (user_id, shift_date, break_start, break_end, delay_minutes, status)
-             VALUES (:user_id, :shift_date, :break_start, :break_end, :delay_minutes, :status)'
+            'INSERT INTO breaks (user_id, shift_date, break_start, break_end, delay_minutes, break_type, status)
+             VALUES (:user_id, :shift_date, :break_start, :break_end, :delay_minutes, :break_type, :status)'
         );
         $stmt->execute([
             'user_id' => $userId,
@@ -23,6 +30,7 @@ final class BreakLog
             'break_start' => $breakStart,
             'break_end' => $breakEnd,
             'delay_minutes' => $delayMinutes,
+            'break_type' => $breakType,
             'status' => $status,
         ]);
     }
@@ -31,7 +39,7 @@ final class BreakLog
     {
         $pdo = Database::connection();
         $stmt = $pdo->prepare(
-            'SELECT shift_date, break_start, break_end, delay_minutes, status
+            'SELECT shift_date, break_start, break_end, delay_minutes, break_type, status
              FROM breaks
              WHERE user_id = :user_id
              ORDER BY created_at DESC
@@ -41,16 +49,16 @@ final class BreakLog
         return $stmt->fetchAll();
     }
 
-    private static function resolveStatus(int $delayMinutes): string
+    private static function resolveStatus(?string $breakStart, ?string $breakEnd, int $delayMinutes): string
     {
-        if ($delayMinutes <= 0) {
-            return 'On Time';
+        if ($breakStart && !$breakEnd) {
+            return 'ON_BREAK';
         }
 
-        if ($delayMinutes <= 10) {
-            return 'Late';
+        if ($delayMinutes > 5) {
+            return 'DELAYED';
         }
 
-        return 'Missed';
+        return 'COMPLETED';
     }
 }

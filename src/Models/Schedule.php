@@ -28,7 +28,9 @@ final class Schedule
             'SELECT shift_date,
                     SUM(shift_type = "AM") AS am,
                     SUM(shift_type = "MID") AS mid,
-                    SUM(shift_type = "PM") AS pm
+                    SUM(shift_type = "PM") AS pm,
+                    SUM(shift_type = "NIGHT") AS night,
+                    SUM(shift_type = "DEFAULT") AS default_shift
              FROM schedule_assignments
              WHERE schedule_id = :schedule_id
              GROUP BY shift_date
@@ -45,6 +47,8 @@ final class Schedule
                 'am' => (int) $row['am'],
                 'mid' => (int) $row['mid'],
                 'pm' => (int) $row['pm'],
+                'night' => (int) $row['night'],
+                'default' => (int) $row['default_shift'],
             ];
         }
 
@@ -94,6 +98,16 @@ final class Schedule
             $scheduleRows[$userId]['week'][$date->format('D')] = $row['shift_type'];
         }
 
+        $orderedDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        foreach ($scheduleRows as &$row) {
+            $orderedWeek = [];
+            foreach ($orderedDays as $day) {
+                $orderedWeek[$day] = $row['week'][$day] ?? 'OFF';
+            }
+            $row['week'] = $orderedWeek;
+        }
+        unset($row);
+
         return array_values($scheduleRows);
     }
 
@@ -111,12 +125,15 @@ final class Schedule
 
         $users = User::bySection($section);
         $weekStartDate = new DateTimeImmutable($weekStart);
-        $weekEnd = $weekStartDate->add(new DateInterval('P5D'))->format('Y-m-d');
+        $weekEnd = $weekStartDate->add(new DateInterval('P6D'))->format('Y-m-d');
         $approvedRequests = ShiftRequest::approvedForWeek($sectionId, $weekStart, $weekEnd);
 
         $requestsByUser = [];
         foreach ($approvedRequests as $request) {
-            $requestsByUser[$request['user_id']][$request['requested_date']] = $request['shift_type'];
+            $requestsByUser[$request['user_id']][$request['requested_date']] = [
+                'shift_type' => $request['shift_type'],
+                'is_day_off' => (int) $request['is_day_off'] === 1,
+            ];
         }
 
         $insertAssignment = $pdo->prepare(
@@ -126,14 +143,22 @@ final class Schedule
 
         foreach ($users as $user) {
             $pattern = self::resolvePattern($user['id']);
-            $daysOff = $pattern === '5x2' ? ['Saturday'] : [];
-            $period = new DatePeriod($weekStartDate, new DateInterval('P1D'), 6);
+            $daysOff = match ($pattern) {
+                '4x3' => ['Friday', 'Saturday', 'Sunday'],
+                default => ['Saturday', 'Sunday'],
+            };
+            $period = new DatePeriod($weekStartDate, new DateInterval('P1D'), 7);
             foreach ($period as $day) {
                 $dayName = $day->format('l');
                 $dateString = $day->format('Y-m-d');
-                $shiftType = $requestsByUser[$user['id']][$dateString] ?? 'AM';
+                $request = $requestsByUser[$user['id']][$dateString] ?? null;
+                $shiftType = $request['shift_type'] ?? 'DEFAULT';
 
                 if (in_array($dayName, $daysOff, true)) {
+                    $shiftType = 'OFF';
+                }
+
+                if ($request && $request['is_day_off']) {
                     $shiftType = 'OFF';
                 }
 
