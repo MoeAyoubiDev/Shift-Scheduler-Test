@@ -1,5 +1,5 @@
 <?php require __DIR__ . '/../partials/header.php'; ?>
-<section class="card form-card">
+<section class="card form-card glass-card">
     <h2>Login</h2>
     <p class="muted">Use the demo credentials provided in the README.</p>
     <?php if (!empty($error)): ?>
@@ -14,7 +14,7 @@
             Password
             <input type="password" name="password" required>
         </label>
-        <button type="submit" class="button">Sign in</button>
+        <button type="submit" class="button btn-primary">Sign in</button>
     </form>
 </section>
 <?php require __DIR__ . '/../partials/footer.php'; ?>

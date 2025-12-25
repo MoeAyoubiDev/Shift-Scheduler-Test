@@ -16,18 +16,43 @@ $user = $user ?? null;
         <strong><?= htmlspecialchars(Config::get('APP_NAME')) ?></strong>
         <span class="tagline">Enterprise Workforce Management</span>
     </div>
-    <nav>
-        <a href="/">Home</a>
-        <?php if ($user): ?>
-            <a href="/dashboard">Dashboard</a>
-            <a href="/requests">Requests</a>
-            <a href="/schedule">Schedule</a>
-            <form action="/logout" method="post" class="inline-form">
-                <button type="submit" class="link-button">Logout</button>
-            </form>
-        <?php else: ?>
-            <a href="/login">Login</a>
-        <?php endif; ?>
-    </nav>
+    <div class="status-pill">Secure Access</div>
 </header>
+<nav class="nav-panel">
+    <div class="nav-grid">
+        <div class="nav-group">
+            <span class="nav-label">Primary actions</span>
+            <div class="nav-cards">
+                <a class="nav-card" href="/">Home</a>
+                <?php if ($user): ?>
+                    <a class="nav-card" href="/dashboard">Dashboard</a>
+                <?php else: ?>
+                    <a class="nav-card" href="/login">Login</a>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php if ($user): ?>
+            <div class="nav-group">
+                <span class="nav-label">Management</span>
+                <div class="nav-cards">
+                    <a class="nav-card" href="/requests">Requests</a>
+                </div>
+            </div>
+            <div class="nav-group">
+                <span class="nav-label">Analytics</span>
+                <div class="nav-cards">
+                    <a class="nav-card" href="/schedule">Schedule</a>
+                </div>
+            </div>
+            <div class="nav-group">
+                <span class="nav-label">Settings</span>
+                <div class="nav-cards">
+                    <form action="/logout" method="post" class="inline-form">
+                        <button type="submit" class="nav-card nav-card-button">Logout</button>
+                    </form>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+</nav>
 <main class="container">

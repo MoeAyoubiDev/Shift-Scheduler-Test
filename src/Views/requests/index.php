@@ -1,5 +1,5 @@
 <?php require __DIR__ . '/../partials/header.php'; ?>
-<section class="card">
+<section class="card glass-card">
     <h2>Shift Requests</h2>
     <p class="muted">Submit new requests or review incoming submissions.</p>
 
@@ -10,7 +10,7 @@
     <?php endif; ?>
 
     <div class="grid two-column">
-        <form method="post" action="/requests/submit" class="form">
+        <form method="post" action="/requests/submit" class="form glass-card form-card">
             <h3>Submit a request</h3>
             <label>
                 Requested date
@@ -43,47 +43,49 @@
                 Reason (optional)
                 <input type="text" name="reason" placeholder="Optional request reason">
             </label>
-            <button type="submit" class="button">Submit request</button>
+            <button type="submit" class="button btn-primary">Submit request</button>
         </form>
 
-        <div>
+        <div class="glass-card">
             <h3>Approval queue</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Employee</th>
-                        <th>Date</th>
-                        <th>Shift</th>
-                        <th>Importance</th>
-                        <th>Pattern</th>
-                        <th>Status</th>
-                        <?php if (in_array($user['role'], ['director', 'team_leader', 'supervisor'], true)): ?>
-                            <th>Action</th>
-                        <?php endif; ?>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($requests as $request): ?>
+            <div class="table-wrap">
+                <table class="table-glass">
+                    <thead>
                         <tr>
-                            <td><?= htmlspecialchars($request['employee']) ?></td>
-                            <td><?= htmlspecialchars($request['date']) ?></td>
-                            <td><?= htmlspecialchars($request['shift']) ?></td>
-                            <td><?= htmlspecialchars($request['importance']) ?></td>
-                            <td><?= htmlspecialchars($request['pattern']) ?></td>
-                            <td><span class="pill"><?= htmlspecialchars($request['status']) ?></span></td>
+                            <th>Employee</th>
+                            <th>Date</th>
+                            <th>Shift</th>
+                            <th>Importance</th>
+                            <th>Pattern</th>
+                            <th>Status</th>
                             <?php if (in_array($user['role'], ['director', 'team_leader', 'supervisor'], true)): ?>
-                                <td>
-                                    <form method="post" action="/requests/update" class="inline-form">
-                                        <input type="hidden" name="request_id" value="<?= (int) $request['id'] ?>">
-                                        <button type="submit" name="status" value="Approved" class="button small">Approve</button>
-                                        <button type="submit" name="status" value="Declined" class="button secondary small">Decline</button>
-                                    </form>
-                                </td>
+                                <th>Action</th>
                             <?php endif; ?>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($requests as $request): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($request['employee']) ?></td>
+                                <td><?= htmlspecialchars($request['date']) ?></td>
+                                <td><?= htmlspecialchars($request['shift']) ?></td>
+                                <td><?= htmlspecialchars($request['importance']) ?></td>
+                                <td><?= htmlspecialchars($request['pattern']) ?></td>
+                                <td><span class="pill"><?= htmlspecialchars($request['status']) ?></span></td>
+                                <?php if (in_array($user['role'], ['director', 'team_leader', 'supervisor'], true)): ?>
+                                    <td>
+                                        <form method="post" action="/requests/update" class="inline-form">
+                                            <input type="hidden" name="request_id" value="<?= (int) $request['id'] ?>">
+                                            <button type="submit" name="status" value="Approved" class="button btn-primary small">Approve</button>
+                                            <button type="submit" name="status" value="Declined" class="button secondary btn-secondary small">Decline</button>
+                                        </form>
+                                    </td>
+                                <?php endif; ?>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </section>
