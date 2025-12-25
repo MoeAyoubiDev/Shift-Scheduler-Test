@@ -31,6 +31,7 @@ final class Config
             'DB_NAME' => 'shift_scheduler',
             'DB_USER' => 'root',
             'DB_PASSWORD' => '',
+            'SEED_USER_PASSWORD' => 'password',
             'SESSION_NAME' => 'shift_scheduler_session',
         ];
 
