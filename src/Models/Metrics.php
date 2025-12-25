@@ -22,20 +22,20 @@ final class Metrics
         $pendingQuery = 'SELECT COUNT(*) FROM shift_requests';
         $pendingParams = [];
         if ($sectionId) {
-            $pendingQuery .= ' INNER JOIN users ON shift_requests.user_id = users.id WHERE users.section_id = :section_id AND shift_requests.status = "Pending"';
+            $pendingQuery .= ' INNER JOIN users ON shift_requests.user_id = users.id WHERE users.section_id = :section_id AND shift_requests.status = "PENDING"';
             $pendingParams['section_id'] = $sectionId;
         } else {
-            $pendingQuery .= ' WHERE shift_requests.status = "Pending"';
+            $pendingQuery .= ' WHERE shift_requests.status = "PENDING"';
         }
 
         $stmt = $pdo->prepare($pendingQuery);
         $stmt->execute($pendingParams);
         $pending = (int) $stmt->fetchColumn();
 
-        $breakQuery = 'SELECT status, COUNT(*) AS total FROM breaks';
+        $breakQuery = 'SELECT status, COUNT(*) AS total FROM breaks WHERE status IN ("COMPLETED", "DELAYED")';
         $breakParams = [];
         if ($sectionId) {
-            $breakQuery .= ' INNER JOIN users ON breaks.user_id = users.id WHERE users.section_id = :section_id GROUP BY status';
+            $breakQuery .= ' AND breaks.user_id IN (SELECT id FROM users WHERE section_id = :section_id) GROUP BY status';
             $breakParams['section_id'] = $sectionId;
         } else {
             $breakQuery .= ' GROUP BY status';
@@ -45,14 +45,14 @@ final class Metrics
         $stmt->execute($breakParams);
         $breaks = $stmt->fetchAll();
 
-        $breakCounts = ['On Time' => 0, 'Late' => 0, 'Missed' => 0];
+        $breakCounts = ['COMPLETED' => 0, 'DELAYED' => 0];
         foreach ($breaks as $break) {
             $breakCounts[$break['status']] = (int) $break['total'];
         }
 
         $breakTotal = array_sum($breakCounts) ?: 1;
-        $onTime = (int) round(($breakCounts['On Time'] / $breakTotal) * 100);
-        $late = (int) round(($breakCounts['Late'] / $breakTotal) * 100);
+        $onTime = (int) round(($breakCounts['COMPLETED'] / $breakTotal) * 100);
+        $late = (int) round(($breakCounts['DELAYED'] / $breakTotal) * 100);
 
         $coverage = self::coverageRate($sectionId);
         $overtimeRisk = self::overtimeRisk($sectionId);
@@ -97,7 +97,7 @@ final class Metrics
             return 0;
         }
 
-        $expected = $users * 6;
+        $expected = $users * 7;
         return (int) min(100, round(($assigned / $expected) * 100));
     }
 

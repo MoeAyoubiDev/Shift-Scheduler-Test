@@ -21,11 +21,12 @@ CREATE TABLE shift_requests (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     requested_date DATE NOT NULL,
-    shift_type ENUM('AM', 'MID', 'PM') NOT NULL,
-    importance ENUM('LOW', 'NORMAL', 'HIGH') NOT NULL,
-    pattern ENUM('5x2', '6x1') NOT NULL,
-    reason VARCHAR(255) NULL,
-    status ENUM('Pending', 'Approved', 'Declined') DEFAULT 'Pending',
+    shift_type ENUM('AM', 'MID', 'PM', 'NIGHT', 'DEFAULT') NULL,
+    is_day_off TINYINT(1) DEFAULT 0,
+    importance ENUM('LOW', 'MEDIUM', 'HIGH') NOT NULL,
+    pattern ENUM('5x2', '4x3', 'ROTATING') NULL,
+    reason TEXT NOT NULL,
+    status ENUM('PENDING', 'APPROVED', 'DECLINED') DEFAULT 'PENDING',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -46,7 +47,7 @@ CREATE TABLE schedule_assignments (
     schedule_id INT NOT NULL,
     user_id INT NOT NULL,
     shift_date DATE NOT NULL,
-    shift_type ENUM('AM', 'MID', 'PM', 'OFF') NOT NULL,
+    shift_type ENUM('AM', 'MID', 'PM', 'NIGHT', 'DEFAULT', 'OFF') NOT NULL,
     FOREIGN KEY (schedule_id) REFERENCES schedules(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -58,7 +59,8 @@ CREATE TABLE breaks (
     break_start DATETIME NULL,
     break_end DATETIME NULL,
     delay_minutes INT DEFAULT 0,
-    status ENUM('On Time', 'Late', 'Missed') DEFAULT 'On Time',
+    break_type ENUM('REGULAR', 'LUNCH', 'EMERGENCY') NOT NULL DEFAULT 'REGULAR',
+    status ENUM('ON_BREAK', 'COMPLETED', 'DELAYED') DEFAULT 'ON_BREAK',
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
@@ -70,11 +72,12 @@ CREATE PROCEDURE sp_submit_shift_request(
     IN p_shift_type VARCHAR(10),
     IN p_importance VARCHAR(10),
     IN p_pattern VARCHAR(5),
-    IN p_reason VARCHAR(255)
+    IN p_is_day_off TINYINT(1),
+    IN p_reason TEXT
 )
 BEGIN
-    INSERT INTO shift_requests (user_id, requested_date, shift_type, importance, pattern, reason)
-    VALUES (p_user_id, p_requested_date, p_shift_type, p_importance, p_pattern, p_reason);
+    INSERT INTO shift_requests (user_id, requested_date, shift_type, importance, pattern, is_day_off, reason)
+    VALUES (p_user_id, p_requested_date, p_shift_type, p_importance, p_pattern, p_is_day_off, p_reason);
 END$$
 
 CREATE PROCEDURE sp_generate_schedule(IN p_section_id INT, IN p_week_start DATE)

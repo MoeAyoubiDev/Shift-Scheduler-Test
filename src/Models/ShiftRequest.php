@@ -30,6 +30,7 @@ final class ShiftRequest
                     users.name AS employee,
                     shift_requests.requested_date AS date,
                     shift_requests.shift_type AS shift,
+                    shift_requests.is_day_off AS is_day_off,
                     shift_requests.importance,
                     shift_requests.pattern,
                     shift_requests.status,
@@ -48,13 +49,14 @@ final class ShiftRequest
     {
         $pdo = Database::connection();
         $stmt = $pdo->prepare(
-            'INSERT INTO shift_requests (user_id, requested_date, shift_type, importance, pattern, reason)
-             VALUES (:user_id, :requested_date, :shift_type, :importance, :pattern, :reason)'
+            'INSERT INTO shift_requests (user_id, requested_date, shift_type, is_day_off, importance, pattern, reason)
+             VALUES (:user_id, :requested_date, :shift_type, :is_day_off, :importance, :pattern, :reason)'
         );
         $stmt->execute([
             'user_id' => $userId,
             'requested_date' => $data['requested_date'],
             'shift_type' => $data['shift_type'],
+            'is_day_off' => $data['is_day_off'],
             'importance' => $data['importance'],
             'pattern' => $data['pattern'],
             'reason' => $data['reason'],
@@ -64,7 +66,7 @@ final class ShiftRequest
     public static function updateStatus(int $requestId, string $status): void
     {
         $pdo = Database::connection();
-        $stmt = $pdo->prepare('UPDATE shift_requests SET status = :status WHERE id = :id');
+        $stmt = $pdo->prepare('UPDATE shift_requests SET status = :status WHERE id = :id AND status = "PENDING"');
         $stmt->execute([
             'status' => $status,
             'id' => $requestId,
@@ -79,7 +81,7 @@ final class ShiftRequest
              FROM shift_requests
              INNER JOIN users ON shift_requests.user_id = users.id
              WHERE users.section_id = :section_id
-               AND shift_requests.status = "Approved"
+               AND shift_requests.status = "APPROVED"
                AND shift_requests.requested_date BETWEEN :week_start AND :week_end'
         );
         $stmt->execute([
@@ -88,5 +90,18 @@ final class ShiftRequest
             'week_end' => $weekEnd,
         ]);
         return $stmt->fetchAll();
+    }
+
+    public static function hasRequestForDate(int $userId, string $requestedDate): bool
+    {
+        $pdo = Database::connection();
+        $stmt = $pdo->prepare(
+            'SELECT 1 FROM shift_requests WHERE user_id = :user_id AND requested_date = :requested_date LIMIT 1'
+        );
+        $stmt->execute([
+            'user_id' => $userId,
+            'requested_date' => $requestedDate,
+        ]);
+        return (bool) $stmt->fetchColumn();
     }
 }

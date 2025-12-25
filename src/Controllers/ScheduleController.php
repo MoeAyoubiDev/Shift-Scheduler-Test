@@ -47,7 +47,7 @@ final class ScheduleController extends BaseController
             return;
         }
 
-        if (!in_array($user['role'], ['director', 'team_leader', 'supervisor'], true)) {
+        if (!in_array($user['role'], ['director', 'team_leader'], true)) {
             $this->response->redirect('/schedule');
             return;
         }

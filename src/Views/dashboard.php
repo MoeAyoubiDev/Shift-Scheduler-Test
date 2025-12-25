@@ -47,6 +47,8 @@
                         <th>AM</th>
                         <th>MID</th>
                         <th>PM</th>
+                        <th>Night</th>
+                        <th>Default</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -56,6 +58,8 @@
                             <td><?= $row['am'] ?></td>
                             <td><?= $row['mid'] ?></td>
                             <td><?= $row['pm'] ?></td>
+                            <td><?= $row['night'] ?></td>
+                            <td><?= $row['default'] ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -78,6 +82,7 @@
                             <th>Date</th>
                             <th>Start</th>
                             <th>End</th>
+                            <th>Type</th>
                             <th>Delay</th>
                             <th>Status</th>
                         </tr>
@@ -88,6 +93,7 @@
                                 <td><?= htmlspecialchars($break['shift_date']) ?></td>
                                 <td><?= htmlspecialchars($break['break_start'] ?? '—') ?></td>
                                 <td><?= htmlspecialchars($break['break_end'] ?? '—') ?></td>
+                                <td><?= htmlspecialchars($break['break_type'] ?? 'REGULAR') ?></td>
                                 <td><?= htmlspecialchars((string) $break['delay_minutes']) ?> min</td>
                                 <td><span class="pill"><?= htmlspecialchars($break['status']) ?></span></td>
                             </tr>
@@ -102,27 +108,39 @@
     <article class="card glass-card">
         <h3>Log a break</h3>
         <p class="muted">Capture break timing and delays for compliance tracking.</p>
-        <form method="post" action="/breaks/log" class="form">
-            <label>
-                Shift date
-                <input type="date" name="shift_date" value="<?= date('Y-m-d') ?>" required>
-            </label>
-            <div class="split">
+        <?php if ($user['role'] !== 'employee'): ?>
+            <p class="muted">Break tracking is only available for employees.</p>
+        <?php else: ?>
+            <form method="post" action="/breaks/log" class="form">
                 <label>
-                    Break start
-                    <input type="datetime-local" name="break_start">
+                    Shift date
+                    <input type="date" name="shift_date" value="<?= date('Y-m-d') ?>" required>
                 </label>
                 <label>
-                    Break end
-                    <input type="datetime-local" name="break_end">
+                    Break type
+                    <select name="break_type" required>
+                        <option value="REGULAR">Regular</option>
+                        <option value="LUNCH">Lunch</option>
+                        <option value="EMERGENCY">Emergency</option>
+                    </select>
                 </label>
-            </div>
-            <label>
-                Delay minutes
-                <input type="number" name="delay_minutes" min="0" max="60" value="0" required>
-            </label>
-            <button type="submit" class="button btn-primary">Record break</button>
-        </form>
+                <div class="split">
+                    <label>
+                        Break start
+                        <input type="datetime-local" name="break_start">
+                    </label>
+                    <label>
+                        Break end
+                        <input type="datetime-local" name="break_end">
+                    </label>
+                </div>
+                <label>
+                    Delay minutes
+                    <input type="number" name="delay_minutes" min="0" max="60" value="0" required>
+                </label>
+                <button type="submit" class="button btn-primary">Record break</button>
+            </form>
+        <?php endif; ?>
     </article>
 </section>
 <?php require __DIR__ . '/partials/footer.php'; ?>
