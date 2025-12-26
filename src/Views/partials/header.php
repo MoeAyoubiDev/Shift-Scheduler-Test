@@ -8,7 +8,7 @@ $user = $user ?? null;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= htmlspecialchars(Config::get('APP_NAME')) ?></title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/assets/css/app.css">
 </head>
 <body>
 <header class="top-bar">
