@@ -20,16 +20,18 @@ final class User
         string $name,
         string $email,
         string $password,
-        int $sectionId,
-        string $role
+        ?int $sectionId,
+        string $role,
+        ?int $companyId = null
     ): array {
         $pdo = Database::connection();
 
         $stmt = $pdo->prepare(
-            'INSERT INTO users (section_id, name, email, password_hash, role, active)
-             VALUES (:section_id, :name, :email, :password_hash, :role, 1)'
+            'INSERT INTO users (company_id, section_id, name, email, password_hash, role, active)
+             VALUES (:company_id, :section_id, :name, :email, :password_hash, :role, 1)'
         );
         $stmt->execute([
+            'company_id' => $companyId,
             'section_id' => $sectionId,
             'name' => $name,
             'email' => $email,
@@ -50,6 +52,7 @@ final class User
                     users.name,
                     users.email,
                     users.password_hash,
+                    users.company_id,
                     users.role,
                     sections.name AS section
              FROM users
@@ -68,6 +71,7 @@ final class User
             'id' => (int) $user['id'],
             'name' => $user['name'],
             'email' => $user['email'],
+            'company_id' => $user['company_id'] ? (int) $user['company_id'] : null,
             'role' => $user['role'],
             'section' => $user['section'] ?? 'All Sections',
         ];
@@ -80,6 +84,7 @@ final class User
             'SELECT users.id,
                     users.name,
                     users.email,
+                    users.company_id,
                     users.role,
                     sections.name AS section
              FROM users
@@ -98,6 +103,7 @@ final class User
             'id' => (int) $user['id'],
             'name' => $user['name'],
             'email' => $user['email'],
+            'company_id' => $user['company_id'] ? (int) $user['company_id'] : null,
             'role' => $user['role'],
             'section' => $user['section'] ?? 'All Sections',
         ];

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\View;
-use App\Models\Section;
+use App\Models\Company;
+use App\Models\SchedulingPreference;
 use App\Models\User;
+use App\Models\WorkRule;
 
 final class AuthController extends BaseController
 {
@@ -19,11 +21,9 @@ final class AuthController extends BaseController
 
     public function showRegister(): void
     {
-        $sections = Section::all();
         $flash = $_SESSION['flash'] ?? null;
         unset($_SESSION['flash']);
         View::render('auth/register', [
-            'sections' => $sections,
             'flash' => $flash,
         ]);
     }
@@ -45,23 +45,42 @@ final class AuthController extends BaseController
 
     public function register(): void
     {
+        $companyName = trim($this->request->post['company_name'] ?? '');
         $name = trim($this->request->post['name'] ?? '');
         $email = trim($this->request->post['email'] ?? '');
         $password = $this->request->post['password'] ?? '';
         $passwordConfirm = $this->request->post['password_confirm'] ?? '';
-        $sectionId = (int) ($this->request->post['section_id'] ?? 0);
 
-        $validationError = $this->validateRegistration($name, $email, $password, $passwordConfirm, $sectionId);
+        $validationError = $this->validateRegistration($companyName, $name, $email, $password, $passwordConfirm);
         if ($validationError) {
             $_SESSION['flash'] = ['type' => 'error', 'message' => $validationError];
             $this->response->redirect('/register');
             return;
         }
 
-        $user = User::create($name, $email, $password, $sectionId, 'employee');
+        $companyId = Company::create($companyName, $email);
+        WorkRule::upsert($companyId, [
+            'standard_shift_hours' => 8,
+            'max_consecutive_days' => 6,
+            'min_hours_between_shifts' => 12,
+            'overtime_threshold' => 40,
+            'auto_overtime' => 1,
+            'enforce_rest' => 1,
+            'allow_shift_swapping' => 1,
+        ]);
+        SchedulingPreference::upsert($companyId, [
+            'default_view' => 'Weekly',
+            'week_start_day' => 'Sunday',
+            'lead_time_weeks' => 2,
+            'send_notifications' => 1,
+            'require_confirmations' => 1,
+            'ai_scheduling' => 0,
+        ]);
+
+        $user = User::create($name, $email, $password, null, 'director', $companyId);
         $_SESSION['user'] = $user;
-        $_SESSION['flash'] = ['type' => 'success', 'message' => 'Account created successfully. Welcome aboard!'];
-        $this->response->redirect('/dashboard');
+        $_SESSION['flash'] = ['type' => 'success', 'message' => 'Account created successfully. Let’s set up your workspace.'];
+        $this->response->redirect('/setup/company');
     }
 
     public function logout(): void
@@ -71,13 +90,13 @@ final class AuthController extends BaseController
     }
 
     private function validateRegistration(
+        string $companyName,
         string $name,
         string $email,
         string $password,
-        string $passwordConfirm,
-        int $sectionId
+        string $passwordConfirm
     ): ?string {
-        if ($name === '' || $email === '' || $password === '' || $passwordConfirm === '') {
+        if ($companyName === '' || $name === '' || $email === '' || $password === '' || $passwordConfirm === '') {
             return 'Please complete all required fields.';
         }
 
@@ -91,14 +110,6 @@ final class AuthController extends BaseController
 
         if ($password !== $passwordConfirm) {
             return 'Passwords do not match.';
-        }
-
-        if ($sectionId <= 0) {
-            return 'Please select a section.';
-        }
-
-        if (!Section::exists($sectionId)) {
-            return 'Selected section is invalid.';
         }
 
         if (User::emailExists($email)) {

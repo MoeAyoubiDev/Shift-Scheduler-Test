@@ -12,48 +12,22 @@ $user = $user ?? null;
 </head>
 <body>
 <header class="top-bar">
-    <div>
-        <strong><?= htmlspecialchars(Config::get('APP_NAME')) ?></strong>
-        <span class="tagline">Enterprise Workforce Management</span>
+    <div class="logo">
+        <span class="logo-icon">📅</span>
+        <span><?= htmlspecialchars(Config::get('APP_NAME')) ?></span>
     </div>
-    <div class="status-pill">Secure Access</div>
-</header>
-<nav class="nav-panel">
-    <div class="nav-grid">
-        <div class="nav-group">
-            <span class="nav-label">Primary actions</span>
-            <div class="nav-cards">
-                <a class="nav-card" href="/">Home</a>
-                <?php if ($user): ?>
-                    <a class="nav-card" href="/dashboard">Dashboard</a>
-                <?php else: ?>
-                    <a class="nav-card" href="/login">Login</a>
-                    <a class="nav-card" href="/register">Sign up</a>
-                <?php endif; ?>
-            </div>
+    <?php if ($user): ?>
+        <div class="top-actions">
+            <span class="muted"><?= htmlspecialchars(ucfirst(str_replace('_', ' ', $user['role']))) ?> Dashboard</span>
+            <form action="/logout" method="post" class="inline-form">
+                <button type="submit" class="button ghost small">Logout</button>
+            </form>
         </div>
-        <?php if ($user): ?>
-            <div class="nav-group">
-                <span class="nav-label">Management</span>
-                <div class="nav-cards">
-                    <a class="nav-card" href="/requests">Requests</a>
-                </div>
-            </div>
-            <div class="nav-group">
-                <span class="nav-label">Analytics</span>
-                <div class="nav-cards">
-                    <a class="nav-card" href="/schedule">Schedule</a>
-                </div>
-            </div>
-            <div class="nav-group">
-                <span class="nav-label">Settings</span>
-                <div class="nav-cards">
-                    <form action="/logout" method="post" class="inline-form">
-                        <button type="submit" class="nav-card nav-card-button">Logout</button>
-                    </form>
-                </div>
-            </div>
-        <?php endif; ?>
-    </div>
-</nav>
+    <?php else: ?>
+        <div class="top-actions">
+            <a class="button ghost small" href="/login">Log In</a>
+            <a class="button btn-primary small" href="/register">Get Started</a>
+        </div>
+    <?php endif; ?>
+</header>
 <main class="container">
