@@ -48,6 +48,79 @@ php -S localhost:8000 -t public
 
 6. Visit `http://localhost:8000`.
 
+## Deploy to DigitalOcean (Ubuntu + Nginx + PHP-FPM)
+
+> These commands assume Ubuntu 22.04/24.04 on a DigitalOcean droplet.
+
+1. Install system dependencies:
+
+```bash
+sudo apt update
+sudo apt install -y nginx mysql-server php8.1-fpm php8.1-mysql php8.1-xml php8.1-mbstring php8.1-curl unzip
+```
+
+2. Install Composer:
+
+```bash
+curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+```
+
+3. Clone the repo and install dependencies:
+
+```bash
+git clone <your-repo-url> /var/www/shift-scheduler
+cd /var/www/shift-scheduler
+composer install --no-dev --optimize-autoloader
+```
+
+4. Configure environment:
+
+```bash
+cp config/.env.example config/.env
+sudo nano config/.env
+```
+
+5. Configure Nginx (replace `your-domain.com`):
+
+```bash
+sudo tee /etc/nginx/sites-available/shift-scheduler <<'NGINX'
+server {
+    listen 80;
+    server_name your-domain.com;
+    root /var/www/shift-scheduler/public;
+    index index.php;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \\.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
+    }
+
+    location ~ /\\.ht {
+        deny all;
+    }
+}
+NGINX
+```
+
+6. Enable the site and restart services:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/shift-scheduler /etc/nginx/sites-enabled/shift-scheduler
+sudo nginx -t
+sudo systemctl restart nginx php8.1-fpm
+```
+
+7. (Optional) Set up HTTPS with Certbot:
+
+```bash
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d your-domain.com
+```
+
 ## Demo Credentials
 
 | Role | Email | Password |

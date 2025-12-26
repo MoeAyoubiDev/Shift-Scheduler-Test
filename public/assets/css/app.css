@@ -1,19 +1,22 @@
 :root {
     color-scheme: dark;
-    font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
-    background: #0b1120;
+    font-family: "Space Grotesk", "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: #070b1a;
     color: #e2e8f0;
-    --bg-primary: #0b1120;
-    --bg-secondary: #111827;
-    --glass-bg: rgba(17, 24, 39, 0.7);
-    --glass-border: rgba(148, 163, 184, 0.2);
+    --bg-primary: #070b1a;
+    --bg-secondary: #0f172a;
+    --glass-bg: rgba(15, 23, 42, 0.72);
+    --glass-border: rgba(148, 163, 184, 0.22);
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
-    --accent: #6366f1;
-    --accent-strong: #4f46e5;
+    --accent: #7c6dff;
+    --accent-strong: #5b46ff;
+    --accent-soft: rgba(124, 109, 255, 0.18);
     --success: rgba(34, 197, 94, 0.2);
     --warning: rgba(234, 179, 8, 0.2);
     --error: rgba(239, 68, 68, 0.2);
+    --shadow-strong: 0 24px 60px rgba(2, 6, 23, 0.55);
+    --shadow-soft: 0 16px 36px rgba(15, 23, 42, 0.35);
 }
 
 * {
@@ -23,7 +26,9 @@
 body {
     margin: 0;
     min-height: 100vh;
-    background: radial-gradient(circle at top, rgba(79, 70, 229, 0.16) 0%, rgba(15, 23, 42, 0.95) 40%, #0b1120 100%);
+    background:
+        radial-gradient(circle at top, rgba(92, 79, 255, 0.32) 0%, rgba(7, 11, 26, 0.95) 40%, #050714 100%),
+        radial-gradient(circle at 10% 30%, rgba(34, 211, 238, 0.12) 0%, transparent 45%);
     color: var(--text-primary);
 }
 
@@ -43,9 +48,9 @@ a {
     justify-content: space-between;
     align-items: center;
     padding: 1.25rem 2.5rem;
-    background: rgba(15, 23, 42, 0.72);
+    background: rgba(7, 11, 26, 0.7);
     border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(18px);
     position: sticky;
     top: 0;
     z-index: 10;
@@ -54,14 +59,16 @@ a {
 .logo {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
     font-weight: 600;
+    letter-spacing: 0.02em;
 }
 
 .logo-icon {
-    background: rgba(99, 102, 241, 0.25);
+    background: rgba(124, 109, 255, 0.25);
     padding: 0.3rem 0.45rem;
     border-radius: 0.6rem;
+    box-shadow: inset 0 0 10px rgba(124, 109, 255, 0.35);
 }
 
 .top-actions {
@@ -78,8 +85,20 @@ a {
     text-align: center;
 }
 
+.hero-shell {
+    display: grid;
+    gap: 2.5rem;
+}
+
+.hero-grid {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    align-items: center;
+}
+
 .hero-content h1 {
-    font-size: clamp(2.5rem, 4vw, 3.6rem);
+    font-size: clamp(2.5rem, 4vw, 3.8rem);
     margin: 0 0 1rem;
 }
 
@@ -94,11 +113,18 @@ a {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
+}
+
+.hero-badges {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
 }
 
 .section {
-    margin: 3rem 0;
+    margin: 3.5rem 0;
 }
 
 .section-heading {
@@ -112,7 +138,7 @@ a {
 .eyebrow {
     font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.24em;
     color: #8b92ff;
     font-weight: 600;
 }
@@ -135,12 +161,58 @@ a {
     border-radius: 1.25rem;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
-    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.45);
+    box-shadow: var(--shadow-soft);
     backdrop-filter: blur(16px);
 }
 
 .glass-card.light {
     background: rgba(30, 41, 59, 0.6);
+}
+
+.glass-surface {
+    padding: 1.5rem;
+    border-radius: 1.25rem;
+    background: rgba(5, 11, 25, 0.72);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    box-shadow: var(--shadow-strong);
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-surface::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top left, rgba(124, 109, 255, 0.18), transparent 60%);
+    pointer-events: none;
+}
+
+.hero-panel {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.hero-panel h3 {
+    margin: 0 0 1rem;
+}
+
+.hero-metrics {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.metric-chip {
+    padding: 1rem;
+    border-radius: 1rem;
+    background: rgba(12, 20, 38, 0.85);
+    border: 1px solid rgba(124, 109, 255, 0.25);
+}
+
+.metric-chip strong {
+    display: block;
+    font-size: 1.4rem;
+    color: #c7d2fe;
 }
 
 .highlight-card {
@@ -180,7 +252,7 @@ a {
 
 .button {
     padding: 0.75rem 1.4rem;
-    border-radius: 0.8rem;
+    border-radius: 0.85rem;
     border: none;
     cursor: pointer;
     font-weight: 600;
@@ -195,7 +267,7 @@ a {
 .button.btn-primary {
     background: linear-gradient(135deg, var(--accent), var(--accent-strong));
     color: #fff;
-    box-shadow: 0 10px 24px rgba(99, 102, 241, 0.35);
+    box-shadow: 0 12px 28px rgba(99, 102, 241, 0.35);
 }
 
 .button.secondary {
@@ -216,6 +288,64 @@ a {
 
 .muted {
     color: var(--text-secondary);
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(124, 109, 255, 0.2);
+    border: 1px solid rgba(124, 109, 255, 0.35);
+    font-size: 0.8rem;
+}
+
+.logo-row {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    text-align: center;
+    opacity: 0.8;
+}
+
+.logo-pill {
+    padding: 0.9rem 1rem;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.timeline {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.timeline-step {
+    display: grid;
+    gap: 0.35rem;
+    padding: 1.25rem;
+    border-radius: 1rem;
+    background: rgba(11, 18, 34, 0.75);
+    border: 1px solid rgba(124, 109, 255, 0.22);
+}
+
+.timeline-step span {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.quote-card {
+    display: grid;
+    gap: 1rem;
+    background: rgba(8, 14, 28, 0.8);
+    border-radius: 1.25rem;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    padding: 1.5rem;
+}
+
+.quote-card strong {
+    color: #c7d2fe;
 }
 
 .auth-layout {
@@ -574,5 +704,9 @@ progress::-webkit-progress-value {
     .form-actions {
         flex-direction: column;
         align-items: stretch;
+    }
+
+    .hero-actions {
+        justify-content: center;
     }
 }
