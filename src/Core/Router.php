@@ -7,8 +7,10 @@ namespace App\Core;
 use App\Controllers\AuthController;
 use App\Controllers\BreakController;
 use App\Controllers\DashboardController;
+use App\Controllers\ManagementController;
 use App\Controllers\RequestController;
 use App\Controllers\ScheduleController;
+use App\Controllers\SetupController;
 
 final class Router
 {
@@ -28,6 +30,15 @@ final class Router
                 '/dashboard' => [DashboardController::class, 'dashboard'],
                 '/requests' => [RequestController::class, 'index'],
                 '/schedule' => [ScheduleController::class, 'index'],
+                '/setup/company' => [SetupController::class, 'company'],
+                '/setup/work-rules' => [SetupController::class, 'workRules'],
+                '/setup/employees' => [SetupController::class, 'employees'],
+                '/setup/preferences' => [SetupController::class, 'preferences'],
+                '/setup/review' => [SetupController::class, 'review'],
+                '/analytics' => [ManagementController::class, 'analytics'],
+                '/time-tracking' => [ManagementController::class, 'timeTracking'],
+                '/locations' => [ManagementController::class, 'locations'],
+                '/settings' => [ManagementController::class, 'settings'],
             ],
             'POST' => [
                 '/login' => [AuthController::class, 'login'],
@@ -37,6 +48,11 @@ final class Router
                 '/requests/update' => [RequestController::class, 'updateStatus'],
                 '/schedule/generate' => [ScheduleController::class, 'generate'],
                 '/breaks/log' => [BreakController::class, 'log'],
+                '/setup/company' => [SetupController::class, 'saveCompany'],
+                '/setup/work-rules' => [SetupController::class, 'saveWorkRules'],
+                '/setup/employees' => [SetupController::class, 'addEmployee'],
+                '/setup/preferences' => [SetupController::class, 'savePreferences'],
+                '/setup/complete' => [SetupController::class, 'complete'],
             ],
         ];
     }
