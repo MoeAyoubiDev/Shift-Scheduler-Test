@@ -201,11 +201,13 @@ final class Database
             }
         }
 
+        $seedPassword = Config::get('SEED_USER_PASSWORD', 'password');
+
         $users = [
             [
                 'name' => 'Diana Director',
                 'email' => 'director@shift.test',
-                'password' => 'password',
+                'password' => $seedPassword,
                 'role' => 'director',
                 'section_id' => null,
                 'company_id' => $companyId,
@@ -213,7 +215,7 @@ final class Database
             [
                 'name' => 'Taylor Leader',
                 'email' => 'leader@app.test',
-                'password' => 'password',
+                'password' => $seedPassword,
                 'role' => 'team_leader',
                 'section_id' => $sectionIds['App After-Sales'],
                 'company_id' => $companyId,
@@ -221,7 +223,7 @@ final class Database
             [
                 'name' => 'Sam Supervisor',
                 'email' => 'supervisor@agent.test',
-                'password' => 'password',
+                'password' => $seedPassword,
                 'role' => 'supervisor',
                 'section_id' => $sectionIds['Agent After-Sales'],
                 'company_id' => $companyId,
@@ -229,7 +231,7 @@ final class Database
             [
                 'name' => 'Sydney Senior',
                 'email' => 'senior@app.test',
-                'password' => 'password',
+                'password' => $seedPassword,
                 'role' => 'senior',
                 'section_id' => $sectionIds['App After-Sales'],
                 'company_id' => $companyId,
@@ -237,7 +239,7 @@ final class Database
             [
                 'name' => 'Evan Employee',
                 'email' => 'employee@agent.test',
-                'password' => 'password',
+                'password' => $seedPassword,
                 'role' => 'employee',
                 'section_id' => $sectionIds['Agent After-Sales'],
                 'company_id' => $companyId,
